@@ -62,3 +62,25 @@ At first, we remove the top 5 customers and analyzing the summary statistics of 
 
 After preparing the data, we use kmean clusters to generate clusters based on the dataset. There are several methods to select the best number of clusters. We run a loop with number of cluster from 2 to 20 and calculate the variance within each cluster. the ratio of the variance within each cluster to the variance within the total dataset is plotted as a function of number of clusters. Using the "Elbow" method, we select the best number of cluster as 5 because adding more than 5 clusters doesn't add much variance.
 
+---
+
+# Appendix:
+
+### Required Libraries
+
+```{r installLibraries, eval=FALSE}
+```
+
+```{r loadLibraries, eval=FALSE}
+```
+
+### Helper Functions
+
+```{r helperFunctions, eval=FALSE}
+```
+
+### Loading the Data Sheets
+
+```{r loadSheets, eval=FALSE}
+```
+

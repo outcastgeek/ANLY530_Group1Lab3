@@ -177,7 +177,7 @@ $(document).ready(function () {
 </div>
 <div id="collecting-the-data" class="section level2">
 <h2>Collecting the data</h2>
-<p>Let us start by [Loading the Data Sheets]</p>
+<p>Let us start by <a href="#loading-the-data-sheets">Loading the Data Sheets</a></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Set Data File Name:</span>
 Wholesale_customers_file &lt;-<span class="st"> &quot;Wholesale_customers_data.csv&quot;</span>
 wine_file &lt;-<span class="st"> &quot;wine.csv&quot;</span>
@@ -317,7 +317,122 @@ ct.km &lt;-<span class="st"> </span><span class="kw">table</span>(wine_data<span
 </div>
 <div id="analysis" class="section level2">
 <h2>Analysis</h2>
-<p>TODO</p>
+<p>In this part, we did an K-means analysis on the UCI wine dataset. We defined a wssplot function to calculate and plot the within-group sum of squares from k=2 to k=15 clusters. We used the NbClust package to evaluate the kmean results from k=2 to k=15, and it returned with the suggestion that k=3 gained the most of the points from all the criteria. Thus, we chose k=3 as the number of clusters, and fit the data. The resulting cluster sizes are 100 for cluster 1,</p>
+<hr />
+</div>
+<div id="appendix" class="section level1">
+<h1>Appendix:</h1>
+<div id="required-libraries" class="section level3">
+<h3>Required Libraries</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;knitr&quot;</span>)
+<span class="kw">install.packages</span>(<span class="st">&quot;kableExtra&quot;</span>)
+<span class="kw">install.packages</span>(<span class="st">&quot;dplyr&quot;</span>)
+<span class="kw">install.packages</span>(<span class="st">&quot;ggplot2&quot;</span>)
+<span class="kw">install.packages</span>(<span class="st">&quot;cluster&quot;</span>)
+<span class="kw">install.packages</span>(<span class="st">&quot;rpart&quot;</span>)
+<span class="kw">install.packages</span>(<span class="st">&quot;rpart.plot&quot;</span>) 
+<span class="kw">install.packages</span>(<span class="st">&quot;RColorBrewer&quot;</span>) 
+<span class="kw">install.packages</span>(<span class="st">&quot;rattle&quot;</span>)
+<span class="kw">install.packages</span>(<span class="st">&quot;NbClust&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(cluster)
+<span class="kw">library</span>(rpart)
+<span class="kw">library</span>(rpart.plot) 
+<span class="kw">library</span>(RColorBrewer) 
+<span class="kw">library</span>(rattle)
+<span class="kw">library</span>(NbClust)</code></pre></div>
+</div>
+<div id="helper-functions" class="section level3">
+<h3>Helper Functions</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Obtains the full File Path</span>
+fullFilePath &lt;-<span class="st"> </span><span class="cf">function</span>(fileName)
+{
+  fileFolder &lt;-<span class="st"> &quot;./data/&quot;</span>
+  fileNamePath &lt;-<span class="st"> </span><span class="kw">paste</span>(fileFolder, fileName, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)
+  fileNamePath
+}
+
+<span class="co"># Converts column of Timestamps to Date</span>
+ttColToDate &lt;-<span class="st"> </span><span class="cf">function</span>(dFrame, colName) {
+  dFrame[colName] &lt;-<span class="st"> </span><span class="kw">as.POSIXct</span>(dFrame[colName], <span class="dt">origin=</span><span class="st">&quot;1970-01-01&quot;</span>)
+  dFrame
+}
+
+<span class="co"># Converts column to utf-8</span>
+toUtf8 &lt;-<span class="st"> </span><span class="cf">function</span>(column) {
+  columnUtf8 &lt;-<span class="st"> </span><span class="kw">iconv</span>(<span class="kw">enc2utf8</span>(column), <span class="dt">sub =</span> <span class="st">&quot;byte&quot;</span>)
+  columnUtf8
+}
+
+<span class="co"># Formats Data</span>
+fmt &lt;-<span class="st"> </span><span class="cf">function</span>(dt, <span class="dt">caption =</span> <span class="st">&quot;&quot;</span>) {
+  fmt_dt &lt;-<span class="st"> </span>dt <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">kable</span>(<span class="st">&quot;latex&quot;</span>, <span class="dt">longtable =</span> T, <span class="dt">booktabs =</span> T)
+  fmt_dt
+}
+
+<span class="co"># Style Data</span>
+style &lt;-<span class="st"> </span><span class="cf">function</span>(dt, <span class="dt">full_width =</span> F, <span class="dt">angle =</span> <span class="dv">0</span>) {
+  style_dt &lt;-<span class="st"> </span>dt <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">kable_styling</span>(<span class="dt">latex_options =</span> <span class="st">&quot;striped&quot;</span>, <span class="dt">full_width =</span> full_width) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">row_spec</span>(<span class="dv">0</span>, <span class="dt">angle =</span> angle)
+  style_dt
+}
+
+<span class="co"># Top Customers</span>
+top.n.custs &lt;-<span class="st"> </span><span class="cf">function</span> (data,cols,<span class="dt">n=</span><span class="dv">5</span>) {  
+  
+  <span class="co">#Initialize a vector to hold customers being removed </span>
+  idx.to.remove &lt;-<span class="kw">integer</span>(<span class="dv">0</span>)  
+  
+  <span class="cf">for</span> (c <span class="cf">in</span> cols){  
+    
+    <span class="co"># For every column in the data we passed to this function </span>
+    <span class="co">#Sort column &quot;c&quot; in descending order (bigger on top) </span>
+    <span class="co">#Order returns the sorted index (e.g. row 15, 3, 7, 1, ...) rather than the actual values sorted.     </span>
+    
+    col.order &lt;-<span class="kw">order</span>(data[,c],<span class="dt">decreasing=</span>T)  
+    
+    
+    <span class="co">#Take the first n of the sorted column C to </span>
+    <span class="co">#combine and de-duplicate the row ids that need to be removed </span>
+    
+    idx &lt;-<span class="kw">head</span>(col.order, n) 
+    idx.to.remove &lt;-<span class="kw">union</span>(idx.to.remove,idx) 
+    
+  } 
+  
+  <span class="co">#Return the indexes of customers to be removed </span>
+  <span class="kw">return</span>(idx.to.remove)  
+  
+}
+
+<span class="co">#Plot the within (cluster) sum of squares to determine the initial value for &quot;k&quot; </span>
+wssplot &lt;-<span class="st"> </span><span class="cf">function</span>(data, <span class="dt">nc=</span><span class="dv">15</span>, <span class="dt">seed=</span><span class="dv">1234</span>){ 
+  wss &lt;-<span class="st"> </span>(<span class="kw">nrow</span>(data)<span class="op">-</span><span class="dv">1</span>)<span class="op">*</span><span class="kw">sum</span>(<span class="kw">apply</span>(data,<span class="dv">2</span>,var)) 
+  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span>nc){ 
+    <span class="kw">set.seed</span>(seed) 
+    wss[i] &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="kw">kmeans</span>(data, <span class="dt">centers=</span>i)<span class="op">$</span>withinss)} 
+  <span class="kw">plot</span>(<span class="dv">1</span><span class="op">:</span>nc, wss, <span class="dt">type=</span><span class="st">&quot;b&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Number of Clusters&quot;</span>, 
+       <span class="dt">ylab=</span><span class="st">&quot;Within groups sum of squares&quot;</span>)}</code></pre></div>
+</div>
+<div id="loading-the-data-sheets" class="section level3">
+<h3>Loading the Data Sheets</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Set Data File Name:</span>
+Wholesale_customers_file &lt;-<span class="st"> &quot;Wholesale_customers_data.csv&quot;</span>
+wine_file &lt;-<span class="st"> &quot;wine.csv&quot;</span>
+
+<span class="co"># Wholesale Customers</span>
+Wholesale_customers_data &lt;-<span class="st"> </span>Wholesale_customers_file <span class="op">%&gt;%</span>
+<span class="st">  </span>fullFilePath <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">read.csv</span>(<span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>, <span class="dt">header=</span><span class="ot">TRUE</span>, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>)
+
+<span class="co"># Wine</span>
+wine_data &lt;-<span class="st"> </span>wine_file <span class="op">%&gt;%</span>
+<span class="st">  </span>fullFilePath <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">read.csv</span>(<span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>, <span class="dt">header=</span><span class="ot">TRUE</span>, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>)</code></pre></div>
+</div>
 </div>
 
 

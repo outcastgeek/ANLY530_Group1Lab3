@@ -58,3 +58,26 @@ Let us start by [Loading the Data Sheets]
 ## Analysis
 
 TODO
+
+---
+
+# Appendix:
+
+### Required Libraries
+
+```{r installLibraries, eval=FALSE}
+```
+
+```{r loadLibraries, eval=FALSE}
+```
+
+### Helper Functions
+
+```{r helperFunctions, eval=FALSE}
+```
+
+### Loading the Data Sheets
+
+```{r loadSheets, eval=FALSE}
+```
+
