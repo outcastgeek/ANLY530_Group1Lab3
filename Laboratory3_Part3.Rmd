@@ -44,7 +44,7 @@ Let us start by [Loading the Data Sheets]
 ```{r loadSheets, message=FALSE, warning=FALSE}
 ```
 
-# Part 2:
+# Part 3:
 -------------
 
 ## Wine Data:
@@ -52,7 +52,7 @@ Let us start by [Loading the Data Sheets]
 ```{r partWineDataPrep, message=FALSE, warning=FALSE}
 ```
 
-```{r part2Wine, message=FALSE, warning=FALSE}
+```{r part3Wine, message=FALSE, warning=FALSE}
 ```
 
 ## Analysis

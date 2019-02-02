@@ -129,11 +129,12 @@ Wholesale_customers_data.rm.top<-Wholesale_customers_data[-c(top.custs),]
 print(summary(Wholesale_customers_data.rm.top))
 
 # Try to remove more customers
-top.custs <-top.n.custs(data,cols = 1:5,n=10)
-length(top.custs)
-data[top.custs,]
-Wholesale_customers_data.rm.top2 <- data[-c(top.custs),]
+top.custs10 <-top.n.custs(Wholesale_customers_data,cols = 1:5,n=10)
+length(top.custs10)
+Wholesale_customers_data[top.custs10,]
+Wholesale_customers_data.rm.top2 <- Wholesale_customers_data[-c(top.custs10),]
 print(summary(Wholesale_customers_data.rm.top2))
+
 
 #Set the seed for reproducibility 
 set.seed(76964057)
@@ -216,7 +217,7 @@ clusplot(Wholesale_customers_data.rm.top, k$cluster, main='2D representation of 
          color=TRUE, shade=TRUE, 
          labels=2, lines=0)
 
-## @knitr part2Wine
+## @knitr partWineDataPrep
 
 wine_df <- scale(wine_data[-1])
 
@@ -229,7 +230,9 @@ wssplot(wine_df)
 set.seed(1234) 
 nc <- NbClust(wine_df, min.nc=2, max.nc = 15, method = "kmeans") 
 
-print(table(nc$Best.n[1,])) 
+print(table(nc$Best.n[1,]))
+
+## @knitr part2Wine
 
 barplot(table(nc$Best.n[1,]), xlab = "Number of Clusters", ylab = "Number of Criteria", main = "Number of Clusters Chosen by 26 Criteria") 
 
@@ -243,7 +246,7 @@ n_clusters = 3
 
 #Conduct the k-Means analysis using the best number of clusters 
 set.seed(1234)
-fit.km <- kmeans(wine_df, n_clusters, nstart=25) 
+fit.km <- kmeans(wine_df, n_clusters, nstart=25)
 
 print(fit.km$size) 
 
@@ -259,6 +262,15 @@ print(ct.km)
 clusplot(wine_df, fit.km$cluster, main='2D representation of the Cluster solution', 
          color=TRUE, shade=TRUE,
          labels=2, lines=0)
+
+## @knitr part3Wine
+
+# pick n = 3
+n_clusters = 3
+
+#Conduct the k-Means analysis using the best number of clusters 
+set.seed(1234)
+fit.km <- kmeans(wine_df, n_clusters, nstart=25)
 
 #Set-up to train a model for classification of wines 
 df <- data.frame(k=fit.km$cluster, wine_df) 
