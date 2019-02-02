@@ -128,6 +128,13 @@ Wholesale_customers_data.rm.top<-Wholesale_customers_data[-c(top.custs),]
 #Examine summary stats for the remaining data
 print(summary(Wholesale_customers_data.rm.top))
 
+# Try to remove more customers
+top.custs <-top.n.custs(data,cols = 1:5,n=10)
+length(top.custs)
+data[top.custs,]
+Wholesale_customers_data.rm.top2 <- data[-c(top.custs),]
+print(summary(Wholesale_customers_data.rm.top2))
+
 #Set the seed for reproducibility 
 set.seed(76964057)
 
@@ -193,8 +200,8 @@ abline(h=0.15, col="red")
 #n <- readline(prompt = "Enter the best number of clusters: ")
 #return(as.integer(n))
 
-# pick n = 20
-n = 20
+# pick n = 5
+n = 5
 
 k <-kmeans(Wholesale_customers_data.rm.top[,-c(1,2)], centers=n)
 
