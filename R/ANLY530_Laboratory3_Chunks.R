@@ -228,23 +228,48 @@ barplot(table(nc$Best.n[1,]), xlab = "Number of Clusters", ylab = "Number of Cri
 
 #Enter the best number of clusters based on the information in the table and barplot 
 
-#n <- readline(prompt = "Enter the best number of clusters:  ") 
-#n <- as.integer(n) 
+#n_clusters <- readline(prompt = "Enter the best number of clusters:  ") 
+#n_clusters <- as.integer(n) 
 
-# pick n = 14
-#n = 14
+# pick n = 3
+n_clusters = 3
 
 #Conduct the k-Means analysis using the best number of clusters 
+set.seed(1234)
+fit.km <- kmeans(wine_df, n_clusters, nstart=25) 
 
-#set.seed(1234)
-#fit.km <- kmeans(wine_df, n, nstart=25) 
+print(fit.km$size) 
 
-#print(fit.km$size) 
+print(fit.km$centers) 
 
-#print(fit.km$centers) 
-
-#print(aggregate(wine_data[-1], by=list(cluster=fit.km$cluster), mean))
+print(aggregate(wine_data[-1], by=list(cluster=fit.km$cluster), mean))
 
 #Use a confusion or truth table to evaluate how well the k-Means analysis performed 
-#ct.km <- table(wine_df$Type, fit.km$cluster) 
-#print(ct.km)
+ct.km <- table(wine_data$Wine, fit.km$cluster) 
+print(ct.km)
+
+#Generate a plot of the clusters
+clusplot(wine_df, fit.km$cluster, main='2D representation of the Cluster solution', 
+         color=TRUE, shade=TRUE,
+         labels=2, lines=0)
+
+#Set-up to train a model for classification of wines 
+df <- data.frame(k=fit.km$cluster, wine_df) 
+print(str(df))
+
+#Randomize the dataset 
+rdf <- df[sample(1:nrow(df)), ] 
+print(head(rdf))
+
+train <- rdf[1:(as.integer(.8*nrow(rdf))-1), ] 
+test <- rdf[(as.integer(.8*nrow(rdf))):nrow(rdf), ]
+
+#Train the classifier and plot the results 
+fit <- rpart(k ~ ., data=train, method="class")
+
+fancyRpartPlot(fit)
+
+#Now use the predict() function to see how well the model works 
+pred <- predict(fit, test, type="class") 
+
+print(table(pred, test$k))
