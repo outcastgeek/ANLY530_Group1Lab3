@@ -4,18 +4,13 @@ install.packages("knitr")
 install.packages("kableExtra")
 install.packages("dplyr")
 install.packages("ggplot2")
-install.packages("ModelMetrics")
-install.packages("generics")
-install.packages("gower")
-install.packages("caret", dependencies = c("Depends", "Suggests"))
-install.packages("naivebayes")
+install.packages("cluster")
 
 ## @knitr loadLibraries
 
 library(dplyr)
 library(ggplot2)
-library(caret)
-library(naivebayes)
+library(cluster) 
 
 ## @knitr helperFunctions
 
@@ -54,21 +49,53 @@ style <- function(dt, full_width = F, angle = 0) {
   style_dt
 }
 
+# Top Customers
+top.n.custs <- function (data,cols,n=5) {  
+  
+  #Initialize a vector to hold customers being removed 
+  idx.to.remove <-integer(0)  
+  
+  for (c in cols){  
+    
+    # For every column in the data we passed to this function 
+    #Sort column "c" in descending order (bigger on top) 
+    #Order returns the sorted index (e.g. row 15, 3, 7, 1, ...) rather than the actual values sorted.     
+    
+    col.order <-order(data[,c],decreasing=T)  
+    
+    
+    #Take the first n of the sorted column C to 
+    #combine and de-duplicate the row ids that need to be removed 
+    
+    idx <-head(col.order, n) 
+    idx.to.remove <-union(idx.to.remove,idx) 
+    
+  } 
+  
+  #Return the indexes of customers to be removed 
+  return(idx.to.remove)  
+  
+}
+
 ## @knitr loadSheets
 
 #Set Data File Name:
-creditDataFile <- "creditData.csv"
-onlineNewsPopularityFile <- "OnlineNewsPopularity.csv"
+Wholesale_customers_file <- "Wholesale_customers_data.csv"
+wine_file <- "wine.csv"
 
-# credit
-credit <- creditDataFile %>%
+# Wholesale Customers
+Wholesale_customers_data <- Wholesale_customers_file %>%
   fullFilePath %>%
   read.csv(encoding = "UTF-8", header=TRUE, stringsAsFactors=FALSE)
 
-# popularity
-onlineNewsPopularity <- onlineNewsPopularityFile %>%
+# Wine
+wine_file_data <- wine_file %>%
   fullFilePath %>%
   read.csv(encoding = "UTF-8", header=TRUE, stringsAsFactors=FALSE)
+
+
+
+
 
 sum(is.na(credit))
 str(credit)
