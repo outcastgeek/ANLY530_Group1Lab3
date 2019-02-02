@@ -5,12 +5,20 @@ install.packages("kableExtra")
 install.packages("dplyr")
 install.packages("ggplot2")
 install.packages("cluster")
+install.packages("rpart")
+install.packages("rpart.plot") 
+install.packages("RColorBrewer") 
+install.packages("rattle")
 
 ## @knitr loadLibraries
 
 library(dplyr)
 library(ggplot2)
-library(cluster) 
+library(cluster)
+library(rpart)
+library(rpart.plot) 
+library(RColorBrewer) 
+library(rattle)
 
 ## @knitr helperFunctions
 
@@ -94,145 +102,103 @@ wine_file_data <- wine_file %>%
   read.csv(encoding = "UTF-8", header=TRUE, stringsAsFactors=FALSE)
 
 
+## @knitr part1Customers
 
+#How Many Customers to be Removed? 
+top.custs <-top.n.custs(Wholesale_customers_data, cols = 1:5,n=5) 
+length(top.custs)
 
+#Examine the customers 
+Wholesale_customers_data[top.custs,]
 
-sum(is.na(credit))
-str(credit)
+#Remove the Customers 
+Wholesale_customers_data.rm.top<-Wholesale_customers_data[-c(top.custs),]
 
-# Pre-Processing
-credit$Creditability <- credit$Creditability %>% as.factor()
-credit %>% is.na() %>% sum()
+#Examine summary stats for the remaining data
+print(summary(Wholesale_customers_data.rm.top))
 
-# Set seed for Random
-set.seed(12345)
+#Set the seed for reproducibility 
+set.seed(76964057)
 
-# Randomize data
-credit_rand <- credit[order(runif(1000)), ]
+#Try K from 2 to 20 
+rng<-2:20  
 
-## @knitr part1Step1
+#Number of times to run the K Means algorithm 
+tries <-100  
 
-# 75% means 750 for training and the rest for testing
-credit_train <- credit_rand[1:750, ]
-credit_test <- credit_rand[751:1000, ]
+#Set up an empty vector to hold all of points 
+avg.totw.ss <-integer(length(rng))  
+avg.totb.ss <- integer(length(rng)) 
+avg.tot.ss <- integer(length(rng)) 
 
-prop.table(table(credit_train$Creditability))
-prop.table(table(credit_test$Creditability))
-
-## @knitr part1Step2
-
-naive_model <- naive_bayes(Creditability ~ ., data= credit_train)
-naive_model
-
-## @knitr part1Step3
-
-(conf_nat <- table(predict(naive_model, credit_test), credit_test$Creditability))
-(Accuracy <- sum(diag(conf_nat))/sum(conf_nat)*100)
-
-## @knitr part2Step1
-
-# Randomize the data
-credit_rand <-credit[order(runif(1000)), ]
-
-# Scale the data
-creditDataScaled <- scale(credit_rand[,2:ncol(credit_rand)], center=TRUE, scale = TRUE)
-
-# Compute the correlation matrix
-m <- cor(creditDataScaled)
-
-# Determine the threshold to use for feature (variable) selection and perform feature selection
-highlycor <- findCorrelation(m, 0.30)
-
-# Recombine the class variable with the highly correlated credit data and split into training and test data sets
-filteredData <- credit_rand[, -(highlycor[2]+1)]
-filteredTraining <- filteredData[1:750, ]
-filteredTest <- filteredData[751:1000, ]
-
-## @knitr part2Step2
-
-# Build and evaluate the Naive Bayes Classifier as usual
-nb_model <- naive_bayes(Creditability ~ ., data = filteredTraining)
-
-
-## @knitr part2Step3
-
-# Evaluate the Naive Bayes Classifier as usual
-filteredTestPred <- predict(nb_model, newdata = filteredTest)
-table(filteredTestPred, filteredTest$Creditability)
-
-(conf_nat <- table(filteredTestPred, filteredTest$Creditability))
-(Accuracy <- sum(diag(conf_nat))/sum(conf_nat)*100)
-
-## @knitr part3Step1
-
-# Data Preperation
-newsShort <- data.frame(
-  onlineNewsPopularity$n_tokens_title,
-  onlineNewsPopularity$n_tokens_content,
-  onlineNewsPopularity$n_unique_tokens,
-  onlineNewsPopularity$n_non_stop_words,
-  onlineNewsPopularity$num_hrefs,
-  onlineNewsPopularity$num_imgs,
-  onlineNewsPopularity$num_videos,
-  onlineNewsPopularity$average_token_length,
-  onlineNewsPopularity$num_keywords,
-  onlineNewsPopularity$kw_max_max,
-  onlineNewsPopularity$global_sentiment_polarity,
-  onlineNewsPopularity$avg_positive_polarity,
-  onlineNewsPopularity$title_subjectivity,
-  onlineNewsPopularity$title_sentiment_polarity,
-  onlineNewsPopularity$abs_title_subjectivity,
-  onlineNewsPopularity$abs_title_sentiment_polarity,
-  onlineNewsPopularity$shares
-  )
-
-colnames(newsShort) <- c(
-  "n_tokens_title",
-  "n_tokens_content",
-  "n_unique_tokens",
-  "n_non_stop_words",
-  "num_hrefs",
-  "num_imgs",
-  "num_videos",
-  "average_token_length",
-  "num_keywords",
-  "kw_max_max",
-  "global_sentiment_polarity",
-  "avg_positive_polarity",
-  "title_subjectivity",
-  "title_sentiment_polarity",
-  "abs_title_subjectivity",
-  "abs_title_sentiment_polarity",
-  "shares"
-  )
-
-# Data Preperation
-newsShort$popular = rep('na', nrow(newsShort))
-for(i in 1:39644) {
-  if(newsShort$shares[i] >= 1400) {
-    newsShort$popular[i] = "yes"} 
-  else {newsShort$popular[i] = "no"}
+# For each value of the range variable 
+for(v in rng){  
+  
+  #Set up an empty vectors to hold the tries 
+  v.totw.ss <-integer(tries)  
+  b.totb.ss <- integer(tries) 
+  tot.ss <- integer(tries) 
+  
+  #Run kmeans 
+  for(i in 1:tries){ 
+    k.temp <-kmeans(Wholesale_customers_data.rm.top,centers=v)  
+    
+    #Store the total withinss 
+    v.totw.ss[i] <-k.temp$tot.withinss 
+    
+    #Store the betweenss 
+    b.totb.ss[i] <- k.temp$betweenss 
+    
+    #Store the total sum of squares 
+    tot.ss[i] <- k.temp$totss 
+  } 
+  
+  #Average the withinss and betweenss 
+  avg.totw.ss[v-1] <-mean(v.totw.ss) 
+  avg.totb.ss[v-1] <-mean(b.totb.ss) 
+  avg.tot.ss[v-1] <- mean(tot.ss) 
 }
-newsShort$shares = newsShort$popular
-newsShort$shares <- as.factor(newsShort$shares)
 
-# Data Preperation
-news_rand <- newsShort[order(runif(10000)), ]
+plot(rng,avg.totw.ss,type="b", main="Total Within SS by Various K", 
+     ylab="Average Total Within Sum of Squares", 
+     xlab="Value of K")
 
-# Split the data into training and test datasets
-news_train <- news_rand[1:9000, ]
-news_test <- news_rand[9001:10000, ]
+plot(rng,avg.totb.ss,type="b", main="Total between SS by Various K", 
+     ylab="Average Total Between Sum of Squares", 
+     xlab="Value of K")
+
+#Plot the ratio of betweenss/total ss and withinss / total ss for evaluation 
+plot(rng,avg.totb.ss/avg.tot.ss,type="b", main="Ratio of between ss / the total ss by Various K", 
+     ylab="Ratio Between SS / Total SS", 
+     xlab="Value of K") 
+abline(h=0.85, col="red")
+
+plot(rng,avg.totw.ss/avg.tot.ss,type="b", main="Ratio of within ss / the total ss by Various K", 
+     ylab="Ratio Between SS / Total SS", 
+     xlab="Value of K") 
+abline(h=0.15, col="red")
+
+#Create the best number of clusters, Remove columns 1 and 2 
+#n <- readline(prompt = "Enter the best number of clusters: ")
+#return(as.integer(n))
+
+# pick n = 20
+n = 20
+
+k <-kmeans(Wholesale_customers_data.rm.top[,-c(1,2)], centers=n)
+
+#Display&nbsp;cluster centers 
+print(k$centers)
+
+#Give a count of data points in each cluster 
+print(table(k$cluster))
+
+#Generate a plot of the clusters
+clusplot(Wholesale_customers_data.rm.top, k$cluster, main='2D representation of the Cluster solution', 
+         color=TRUE, shade=TRUE, 
+         labels=2, lines=0)
+
+## @knitr part1Wine
 
 
-## @knitr part3Step2
-
-nb_model <- naive_bayes(shares ~ ., data=news_train)
-nb_model
-
-## @knitr part3Step3
-
-news_Pred <- predict(nb_model, newdata = news_test)
-(conf_nat <- table(news_Pred, news_test$shares))
-
-(Accuracy <- sum(diag(conf_nat))/sum(conf_nat)*100)
 

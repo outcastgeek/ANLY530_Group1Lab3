@@ -39,3 +39,31 @@ style <- function(dt, full_width = F, angle = 0) {
     row_spec(0, angle = angle)
   style_dt
 }
+
+# Top Customers
+top.n.custs <- function (data,cols,n=5) {  
+  
+  #Initialize a vector to hold customers being removed 
+  idx.to.remove <-integer(0)  
+  
+  for (c in cols){  
+    
+    # For every column in the data we passed to this function 
+    #Sort column "c" in descending order (bigger on top) 
+    #Order returns the sorted index (e.g. row 15, 3, 7, 1, ...) rather than the actual values sorted.     
+    
+    col.order <-order(data[,c],decreasing=T)  
+    
+    
+    #Take the first n of the sorted column C to 
+    #combine and de-duplicate the row ids that need to be removed 
+    
+    idx <-head(col.order, n) 
+    idx.to.remove <-union(idx.to.remove,idx) 
+    
+  } 
+  
+  #Return the indexes of customers to be removed 
+  return(idx.to.remove)  
+  
+}
