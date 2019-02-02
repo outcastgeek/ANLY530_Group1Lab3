@@ -54,7 +54,6 @@ Let us start by [Loading the Data Sheets]
 
 ## Analysis
 
-Part 1 Analysis: 
 The wholesale data contains 440 observations and 8 variables which indicates the distribution channel, the region, and sales of 6 categories of products sold to customers. 
 A summary of the dataset indicates some outliers. For example, sales of fresh products range from 3 to 112151. The maximum value is very far from the mean of 12000. For other variables as well, the maximum values are very far to the mean. Therefore, we try to remove records with these outliers. This requires to order the data in descending order and remove the customers with the very high values. This is important since clustering finds groups similar observations. Keeping these outliers will cause to not have good clusters.
 
