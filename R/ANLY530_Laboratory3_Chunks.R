@@ -209,7 +209,7 @@ clusplot(Wholesale_customers_data.rm.top, k$cluster, main='2D representation of 
          color=TRUE, shade=TRUE, 
          labels=2, lines=0)
 
-## @knitr part1Wine
+## @knitr part2Wine
 
 wine_df <- scale(wine_data[-1])
 
@@ -232,11 +232,11 @@ barplot(table(nc$Best.n[1,]), xlab = "Number of Clusters", ylab = "Number of Cri
 #n <- as.integer(n) 
 
 # pick n = 14
-n = 14
+#n = 14
 
 #Conduct the k-Means analysis using the best number of clusters 
 
-#set.seed(1234) 
+#set.seed(1234)
 #fit.km <- kmeans(wine_df, n, nstart=25) 
 
 #print(fit.km$size) 

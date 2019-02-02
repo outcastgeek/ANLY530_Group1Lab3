@@ -43,12 +43,12 @@ Let us start by [Loading the Data Sheets]
 ```{r loadSheets, message=FALSE, warning=FALSE}
 ```
 
-# Part 1:
+# Part 2:
 -------------
 
-## Customers Data:
+## Wine Data:
 
-```{r part1Customers, message=FALSE, warning=FALSE}
+```{r part2Wine, message=FALSE, warning=FALSE}
 ```
 
 ## Analysis
