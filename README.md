@@ -11,4 +11,4 @@ Machine Learning 1 Laboratory3
 
 [Lab3Report_Part3](https://htmlpreview.github.io/?https://raw.githubusercontent.com/outcastgeek/ANLY530_Group1Lab3/master/Laboratory3_Part3.html)
 
-[Lab3Report_Part4](https://htmlpreview.github.io/?https://raw.githubusercontent.com/outcastgeek/ANLY530_Group1Lab4/master/Laboratory3_Part4.html)
+[Lab3Report_Part4](https://htmlpreview.github.io/?https://raw.githubusercontent.com/outcastgeek/ANLY530_Group1Lab3/master/Laboratory3_Part4.html)
