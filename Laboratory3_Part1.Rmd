@@ -54,4 +54,12 @@ Let us start by [Loading the Data Sheets]
 
 ## Analysis
 
-TODO
+Part 1 Analysis: 
+The wholesale data contains 440 observations and 8 variables which indicates the distribution channel, the region, and sales of 6 categories of products sold to customers. 
+A summary of the dataset indicates some outliers. For example, sales of fresh products range from 3 to 112151. The maximum value is very far from the mean of 12000. For other variables as well, the maximum values are very far to the mean. Therefore, we try to remove records with these outliers. This requires to order the data in descending order and remove the customers with the very high values. This is important since clustering finds groups similar observations. Keeping these outliers will cause to not have good clusters.
+
+At first, we remove the top 5 customers and analyzing the summary statistics of the modified dataset, we observe that the maximum values for all product types are now much lower except for "Frozen" which remains the same. We can try to remove more customers and observe if this removes the outliers for the Frozen category. Trying to remove 10 customers does not remove the outlier for Frozen foods, however it decreases the maximum values for other variables. Therfore, we keep the first option of only removing 5 customers.
+
+
+After preparing the data, we use kmean clusters to generate clusters based on the dataset. There are several methods to select the best number of clusters. We run a loop with number of cluster from 2 to 20 and calculate the variance within each cluster. the ratio of the variance within each cluster to the variance within the total dataset is plotted as a function of number of clusters. Using the "Elbow" method, we select the best number of cluster as 5 because adding more than 5 clusters doesn't add much variance.
+
