@@ -292,3 +292,7 @@ fancyRpartPlot(fit)
 pred <- predict(fit, test, type="class") 
 
 print(table(pred, test$k))
+
+
+## @knitr part4ExtraCredit
+
