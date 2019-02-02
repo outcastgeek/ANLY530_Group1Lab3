@@ -4,6 +4,7 @@ author:
 - "Josseline Betio"
 - "Akpany Benjamin Ebby"
 - "Yajun Wang"
+- "Salah Eddine MIFDAL"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   html_document:
