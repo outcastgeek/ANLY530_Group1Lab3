@@ -9,6 +9,7 @@ install.packages("rpart")
 install.packages("rpart.plot") 
 install.packages("RColorBrewer") 
 install.packages("rattle")
+install.packages("NbClust")
 
 ## @knitr loadLibraries
 
@@ -19,6 +20,7 @@ library(rpart)
 library(rpart.plot) 
 library(RColorBrewer) 
 library(rattle)
+library(NbClust)
 
 ## @knitr helperFunctions
 
@@ -85,6 +87,15 @@ top.n.custs <- function (data,cols,n=5) {
   
 }
 
+#Plot the within (cluster) sum of squares to determine the initial value for "k" 
+wssplot <- function(data, nc=15, seed=1234){ 
+  wss <- (nrow(data)-1)*sum(apply(data,2,var)) 
+  for (i in 2:nc){ 
+    set.seed(seed) 
+    wss[i] <- sum(kmeans(data, centers=i)$withinss)} 
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", 
+       ylab="Within groups sum of squares")}
+
 ## @knitr loadSheets
 
 #Set Data File Name:
@@ -97,7 +108,7 @@ Wholesale_customers_data <- Wholesale_customers_file %>%
   read.csv(encoding = "UTF-8", header=TRUE, stringsAsFactors=FALSE)
 
 # Wine
-wine_file_data <- wine_file %>%
+wine_data <- wine_file %>%
   fullFilePath %>%
   read.csv(encoding = "UTF-8", header=TRUE, stringsAsFactors=FALSE)
 
@@ -200,5 +211,40 @@ clusplot(Wholesale_customers_data.rm.top, k$cluster, main='2D representation of 
 
 ## @knitr part1Wine
 
+wine_df <- scale(wine_data[-1])
 
+#Examine the data frame and plot the within sum of squares 
+head(wine_df)
+wssplot(wine_df)
 
+#Start the k-Means analysis using the variable "nc" for the number of clusters 
+
+set.seed(1234) 
+nc <- NbClust(wine_df, min.nc=2, max.nc = 15, method = "kmeans") 
+
+print(table(nc$Best.n[1,])) 
+
+barplot(table(nc$Best.n[1,]), xlab = "Number of Clusters", ylab = "Number of Criteria", main = "Number of Clusters Chosen by 26 Criteria") 
+
+#Enter the best number of clusters based on the information in the table and barplot 
+
+#n <- readline(prompt = "Enter the best number of clusters:  ") 
+#n <- as.integer(n) 
+
+# pick n = 14
+n = 14
+
+#Conduct the k-Means analysis using the best number of clusters 
+
+#set.seed(1234) 
+#fit.km <- kmeans(wine_df, n, nstart=25) 
+
+#print(fit.km$size) 
+
+#print(fit.km$centers) 
+
+#print(aggregate(wine_data[-1], by=list(cluster=fit.km$cluster), mean))
+
+#Use a confusion or truth table to evaluate how well the k-Means analysis performed 
+#ct.km <- table(wine_df$Type, fit.km$cluster) 
+#print(ct.km)

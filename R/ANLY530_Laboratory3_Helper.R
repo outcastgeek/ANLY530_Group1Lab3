@@ -67,3 +67,12 @@ top.n.custs <- function (data,cols,n=5) {
   return(idx.to.remove)  
   
 }
+
+#Plot the within (cluster) sum of squares to determine the initial value for "k" 
+wssplot <- function(data, nc=15, seed=1234){ 
+  wss <- (nrow(data)-1)*sum(apply(data,2,var)) 
+  for (i in 2:nc){ 
+    set.seed(seed) 
+    wss[i] <- sum(kmeans(data, centers=i)$withinss)} 
+  plot(1:nc, wss, type="b", xlab="Number of Clusters", 
+       ylab="Within groups sum of squares")}
