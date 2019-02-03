@@ -57,7 +57,8 @@ Let us start by [Loading the Data Sheets]
 
 ## Analysis
 
-TODO
+In part 3, we apply a classification model to the data clustered in part 2. We used a confusion table in part 2 to evaluate the results of the cluster analysis. From that, we observe a couple of mis-classifications; for example 3 values which are close in attributes to cluster 2 are misclassified to cluster 1 and other values are also misclassified to cluster 3. In part 3, we create another data frame which contains observations labeled based on the results on the cluster analysis. This data is randomized and split into training and test data before we apply the classification model. 
+Again, a confusion table is used to evaluate the classification model. We also observe that 3 values have been misclassified, which are half of the misclassifications from the cluster analysis. Therefore, using a classification model in addition to the clustering analysis provides better results compared to clustering alone. Also, as the data which has been labeled with clusters is fed into the classification model, misclassifications from the cluster analysis can impact the result of the classification model. This illustrates some advantages and limitations of semi-supervised methods. 
 
 ---
 
