@@ -14,7 +14,7 @@
 <meta name="author" content="Yajun Wang" />
 <meta name="author" content="Salah Eddine MIFDAL" />
 
-<meta name="date" content="2019-02-02" />
+<meta name="date" content="2019-02-03" />
 
 <title>ANLY 530 Group Assignment (Laboratory 3: Mixed Methods or Semi-Supervised Learning)</title>
 
@@ -154,14 +154,14 @@ $(document).ready(function () {
 <h4 class="author"><em>Akpany Benjamin Ebby</em></h4>
 <h4 class="author"><em>Yajun Wang</em></h4>
 <h4 class="author"><em>Salah Eddine MIFDAL</em></h4>
-<h4 class="date"><em>02 February 2019</em></h4>
+<h4 class="date"><em>03 February 2019</em></h4>
 
 </div>
 
 
 <hr />
-<div id="document-as-of-2019-02-02" class="section level4">
-<h4>Document as of 2019-02-02</h4>
+<div id="document-as-of-2019-02-03" class="section level4">
+<h4>Document as of 2019-02-03</h4>
 <pre><code>## Warning: package 'knitr' was built under R version 3.5.2</code></pre>
 <pre><code>## Warning: package 'kableExtra' was built under R version 3.5.2</code></pre>
 <p>Some helper functions do exists to support the code snippets below such as: <code>fullFilePath</code></p>
@@ -317,7 +317,7 @@ ct.km &lt;-<span class="st"> </span><span class="kw">table</span>(wine_data<span
 </div>
 <div id="analysis" class="section level2">
 <h2>Analysis</h2>
-<p>In this part, we did an K-means analysis on the UCI wine dataset. We defined a wssplot function to calculate and plot the within-group sum of squares from k=2 to k=15 clusters. We used the NbClust package to evaluate the kmean results from k=2 to k=15, and it returned with the suggestion that k=3 gained the most of the points from all the criteria. Thus, we chose k=3 as the number of clusters, and fit the data. The resulting cluster sizes are 62 for cluster 1, 65 for cluster 2, and 51 for cluster 3. We printed the fitted clusters opposed to the wine types, and plot the clustering result.</p>
+<p>In this part, we did an K-means analysis on the UCI wine dataset. We defined a wssplot function to calculate and plot the within-group sum of squares from k=2 to k=15 clusters. We used the NbClust package to evaluate the kmean results from k=2 to k=15, and it returned with the suggestion that k=3 gained the most of the points from all the criteria. Thus, we chose k=3 as the number of clusters, and fit the data. The resulting cluster sizes are 62 for cluster 1, 65 for cluster 2, and 51 for cluster 3. We printed the fitted clusters opposed to the wine types, and plot the clustering result. In part 2, the Hubert index helps identify the best number of clusters by plotting the second differences as a function of the number of clusters. Similarly, to the “Elbow“ method, the best number of clusters is the one which corresponds to a significant increase of the differences, which is 3 in this case. The plot of the sum of squares also points that 3 is the best number of clusters.</p>
 <hr />
 </div>
 <div id="appendix" class="section level1">
